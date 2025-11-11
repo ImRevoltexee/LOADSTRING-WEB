@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Converter - Neon Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #e8e8e8;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(155, 92, 255, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 60%, rgba(92, 155, 255, 0.06) 0%, transparent 50%);
+            animation: bgPulse 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-5%, -5%) scale(1.1); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 780px;
+            background: rgba(15, 20, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(155, 92, 255, 0.2),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(155, 92, 255, 0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #9b5cff 0%, #5c9bff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 30px rgba(155, 92, 255, 0.3);
+        }
+
+        .header p {
+            color: #a0a0b0;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .input-section {
+            margin-bottom: 24px;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #e8e8e8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 16px;
+            background: rgba(10, 14, 30, 0.7);
+            border: 1px solid rgba(155, 92, 255, 0.25);
+            border-radius: 16px;
+            color: #e8e8e8;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            transition: all 0.25s ease;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #9b5cff;
+            box-shadow: 0 0 0 3px rgba(155, 92, 255, 0.15),
+                        inset 0 2px 8px rgba(0, 0, 0, 0.3),
+                        0 0 20px rgba(155, 92, 255, 0.2);
+        }
+
+        textarea::placeholder {
+            color: #5a5a6a;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #9b5cff 0%, #7a45d9 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(155, 92, 255, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(155, 92, 255, 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(155, 92, 255, 0.6),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(92, 155, 255, 0.15);
+            color: #5c9bff;
+            border: 1px solid rgba(92, 155, 255, 0.3);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(92, 155, 255, 0.25);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 16px rgba(92, 155, 255, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .output-section {
+            margin-top: 28px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .output-section.show {
+            opacity: 1;
+            max-height: 500px;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(155, 92, 255, 0.3), transparent);
+            margin: 28px 0;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #9b5cff 0%, #7a45d9 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(155, 92, 255, 0.5),
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .glow-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #9b5cff, transparent);
+            opacity: 0.6;
+            border-radius: 24px 24px 0 0;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 28px 20px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="glow-line"></div>
+        
+        <div class="header">
+            <h1>Script Converter</h1>
+            <p>Convert your Lua script to loadstring format</p>
+        </div>
+
+        <div class="input-section">
+            <label class="label">Input Script</label>
+            <div class="textarea-wrapper">
+                <textarea id="inputScript" placeholder="-- Paste your Lua script here or upload a file..."></textarea>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-secondary" id="uploadBtn">
+                <span>📁 Upload .lua File</span>
+            </button>
+            <button class="btn btn-primary" id="convertBtn">
+                <span>✨ Convert to Loadstring</span>
+            </button>
+        </div>
+
+        <input type="file" id="fileInput" class="file-input" accept=".lua,.txt">
+
+        <div class="output-section" id="outputSection">
+            <div class="divider"></div>
+            
+            <div class="input-section">
+                <label class="label">Loadstring Output</label>
+                <div class="textarea-wrapper">
+                    <textarea id="outputScript" readonly placeholder="Your loadstring will appear here..."></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="copyBtn">
+                    <span>📋 Copy Loadstring</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">✓ Copied to clipboard!</div>
+
+    <script>
+        const inputScript = document.getElementById('inputScript');
+        const outputScript = document.getElementById('outputScript');
+        const outputSection = document.getElementById('outputSection');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInput = document.getElementById('fileInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const toast = document.getElementById('toast');
+
+        // Auto-resize textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(180, textarea.scrollHeight) + 'px';
+        }
+
+        inputScript.addEventListener('input', () => autoResize(inputScript));
+        outputScript.addEventListener('input', () => autoResize(outputScript));
+
+        // Upload file handler
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    inputScript.value = event.target.result;
+                    autoResize(inputScript);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // SHA-256 Hash function
+        async function sha256(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        // Convert button handler
+        convertBtn.addEventListener('click', async () => {
+            const script = inputScript.value.trim();
+            
+            if (!script) {
+                showToast('⚠️ Please input a script first!');
+                return;
+            }
+
+            try {
+                const hash = await sha256(script);
+                const origin = window.location.origin;
+                const loadstring = `loadstring(game:HttpGet("${origin}/raw?hash=${hash}"))()`;
+                
+                outputScript.value = loadstring;
+                outputSection.classList.add('show');
+                autoResize(outputScript);
+                
+                showToast('✓ Conversion successful!');
+            } catch (error) {
+                showToast('❌ Conversion failed!');
+                console.error(error);
+            }
+        });
+
+        // Copy button handler
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(outputScript.value);
+                showToast('✓ Copied to clipboard!');
+            } catch (error) {
+                // Fallback for older browsers
+                outputScript.select();
+                document.execCommand('copy');
+                showToast('✓ Copied to clipboard!');
+            }
+        });
+
+        // Toast notification
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
